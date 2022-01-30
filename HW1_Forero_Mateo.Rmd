@@ -8,3 +8,32 @@ knit: (function(input_file, encoding) {
   output_file = file.path(dirname(input_file), out_dir, 'index.html'))})
 ---
 
+```{r}
+# Using wage data set from the ISLR package
+library(ISLR)
+library(tidyverse)
+library(viridis)
+
+filtered_data <- Wage %>%
+  group_by(race, education) %>%
+  summarise(avg_wage = mean(wage))
+
+filtered_data$race <- str_sub(filtered_data$race,4)
+
+w_plot <- ggplot(data = filtered_data, aes(x = education,
+                                           y = avg_wage, fill = race))
+w_plot <- w_plot + 
+  geom_bar(stat = 'identity', color = 'black', position=position_dodge(),
+           width = 0.6)+
+  theme_minimal(base_size = 12) +
+  ylab("Average Wage [$K]") + xlab("Education")+ 
+  scale_y_continuous(labels = scales::dollar_format()) +
+  ggtitle("Average Wage in the Mid-Atlanic by Race and Education")
+```
+
+```{r}
+pdf("HW_1_Plot.pdf", height=4, width=8)
+print(w_plot)
+dev.off()
+```
+
